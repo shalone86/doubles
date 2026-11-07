@@ -574,7 +574,8 @@ function makeStageRaw(s, seed = 1, avoidKeys = []) {
         answer: q.answer,
         choices: shuffle(q.choices, seed + idx),
         clue: `${q.base} plus ${q.next}`,
-        instruction: `Use the double ${q.base} + ${q.base} = ${q.doubleVal}, then add 1 more!`,
+        // The double is always the smaller number (6 + 5 → 5 + 5 = 10), whichever comes first.
+        instruction: `${q.base} + ${q.next}: use the double ${Math.min(q.base, q.next)} + ${Math.min(q.base, q.next)} = ${q.doubleVal}, then add 1 more!`,
         hint: q.hint,
         spoken: q.spoken,
       }));
