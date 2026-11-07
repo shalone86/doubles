@@ -34,6 +34,7 @@ function nextStage() {
 }
 
 function renderHome() {
+  document.body.classList.remove("in-game");
   stopSpeak();
   setDock([]); // no floating bar on the home page
   appEl.innerHTML = "";

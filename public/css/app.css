@@ -1324,3 +1324,64 @@
 .stage-watch { all: unset; cursor: pointer; text-align: center; font-size: .82rem; font-weight: 800; padding: 6px; color: var(--muted);
   background: color-mix(in srgb, var(--surface) 60%, transparent); }
 .extras-title { margin-top: 2em; }
+
+/* ───────── Small screens ───────── */
+/* Repeat and Hint side by side, so the bottom bar is one button tall. */
+#dock { flex-direction: row; justify-content: center; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 480px) {
+  #app { padding-bottom: 110px; }
+  .play-top { padding: 4px 0; }
+  .prompt-banner { padding: 8px 12px; margin-bottom: 8px; border-radius: 14px; }
+  .prompt-banner * { font-size: clamp(.95rem, 4.4vw, 1.15rem); }
+  .visual-stage-card { padding: 10px; border-radius: 18px; }
+  .mirror-board { gap: 6px; flex-wrap: nowrap; }
+  .mirror-wing { flex: 1 1 0; min-width: 0; padding: 8px 4px; }
+  .choices-grid { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; }
+  .choice-tile-btn { padding: 8px 8px; border-radius: 16px; }
+  #dock .btn { padding: 8px 14px; }
+}
+/* Phones turned sideways: beads and answers on the left; question, feedback and buttons on the right. */
+@media (orientation: landscape) and (max-height: 520px) {
+  body.in-game #app { max-width: none; padding: 4px 12px 12px; padding-right: 268px; }
+  .play-top { position: fixed; right: 0; top: 0; width: 256px; z-index: 31; padding: 6px 10px; }
+  .prompt-banner { position: fixed; right: 8px; top: 52px; width: 240px; z-index: 31; padding: 8px 10px; margin: 0; }
+  .prompt-banner * { font-size: .95rem; }
+  .feedback-banner { position: fixed; right: 8px; bottom: 70px; width: 240px; z-index: 31; font-size: .9rem; }
+  #dock { left: auto; right: 0; top: 0; bottom: 0; width: 256px; align-content: flex-end; background: var(--bg);
+    border-top: none; border-left: 2px solid var(--border); padding: 8px 10px max(10px, env(safe-area-inset-bottom)); }
+  .visual-stage-card { padding: 8px; }
+  .mirror-board { gap: 6px; flex-wrap: nowrap; margin-bottom: 6px; }
+  .mirror-wing { flex: 1 1 0; min-width: 0; padding: 6px 4px; }
+  .choices-grid { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px; }
+  .choice-tile-btn { padding: 6px 8px; }
+  .home-hero { padding-top: 6px; }
+}
+/* Bead bars never poke out of their box. */
+.mirror-wing, .pile-beads { overflow: hidden; }
+.mirror-wing .bead-bar-svg, .pile-beads .bead-bar-svg { max-width: 100%; height: auto; }
+@media (orientation: landscape) and (max-height: 520px) {
+  /* Beads on the left; the equation and the answers beside them, so nothing is below the edge. */
+  .doubles-board-wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 10px; align-items: start; }
+  .doubles-board-wrap > .visual-stage-card { grid-row: 1 / span 2; }
+  .equation-banner { margin: 0 !important; padding: 8px !important; }
+  .equation-banner * { font-size: 1.4rem; }
+  .choices-grid { grid-template-columns: 1fr 1fr; }
+  .play-top { gap: 4px; }
+  .play-top .btn { padding: 4px 8px; font-size: .8rem; min-height: 0; }
+  .play-top .dots { min-width: 0; flex: 1; }
+}
+@media (orientation: landscape) and (max-height: 520px), (max-width: 480px) {
+  .choice-tile-btn { min-width: 0; }
+  .choice-tile-btn svg { max-width: 100%; height: auto; }
+  .plates-grid { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)) !important; gap: 6px !important; }
+  .share-plate { padding: 6px 4px !important; min-height: 0 !important; }
+}
+@media (orientation: landscape) and (max-height: 520px), (max-width: 480px) {
+  /* Plates, groups and boxes: smaller cards that sit side by side. */
+  .equal-groups-grid, .plates-grid, .boxes-grid { gap: 6px; }
+  .group-nest-card, .share-plate, .pack-box { min-width: 76px; padding: 6px 6px; gap: 2px; border-radius: 12px; font-size: .9rem; }
+  /* Fair halves: the two baskets side by side. */
+  .baskets-row { flex-wrap: nowrap !important; gap: 8px !important; }
+  .fair-basket { flex: 1 1 0 !important; min-width: 0 !important; padding: 8px 6px !important; }
+  .basket-count { width: 44px !important; height: 44px !important; font-size: 1.3rem !important; }
+}
