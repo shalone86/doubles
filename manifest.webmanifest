@@ -1,0 +1,13 @@
+{
+  "name": "Doubles! Halves, Multiply & Divide",
+  "short_name": "Doubles!",
+  "description": "Montessori doubles, halves, equal groups, arrays, multiplication, and fair-share division for Grades 1, 2, and 3.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fffaf0",
+  "theme_color": "#ff8a00",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }
+  ]
+}
