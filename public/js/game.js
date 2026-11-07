@@ -28,6 +28,16 @@ const FOLLOWUP_PROMPTS = [
   "Ready for the next puzzle?",
 ];
 
+const PRAISE = ["Awesome!", "Yes!", "You got it!", "Great job!", "That's right!", "Super!", "Nice work!", "Wonderful!", "Way to go!",
+  "Your guardian angel is cheering for you!", "Way to let your light shine!"];
+let lastPraise = -1;
+function nextPraise() {
+  let i;
+  do i = Math.floor(Math.random() * PRAISE.length); while (i === lastPraise);
+  lastPraise = i;
+  return PRAISE[i];
+}
+
 export class Game {
   constructor(stage, mount, onExit) {
     this.stage = stage;
@@ -278,8 +288,10 @@ export class Game {
       burst(r.left + r.width / 2, r.top + r.height / 2);
 
       this.feedbackBanner.className = "feedback-banner good";
-      this.feedbackBanner.innerHTML = `<span>🌟 Awesome! ${q.hint}</span>`;
-      speak(`Yes! ${spoken(q.hint)}`);
+      // Varied praise (never the same twice in a row), with a gentle Angelio touch now and then.
+      const praise = nextPraise();
+      this.feedbackBanner.innerHTML = `<span>🌟 ${praise} ${q.hint}</span>`;
+      speak(`${praise} ${spoken(q.hint)}`);
 
       setTimeout(() => this.advance(false), 1250);
     } else {

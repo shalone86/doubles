@@ -241,7 +241,7 @@ const BANK_FAIR_HALVES = [
   { total: 6, answer: 3, choices: [3, 2, 4], hint: "3 plus 3 is 6, so half of 6 is 3!", spoken: "Half of 6 is 3." },
   { total: 8, answer: 4, choices: [4, 3, 5], hint: "4 plus 4 is 8, so half of 8 is 4!", spoken: "Half of 8 is 4." },
   { total: 10, answer: 5, choices: [5, 4, 6], hint: "5 fingers on each hand make 10, so half of 10 is 5!", spoken: "Half of 10 is 5." },
-  { total: 12, answer: 6, choices: [6, 5, 7], hint: "6 plus 6 is 12, so half of 12 is 6!", spoken: "Half of 12 is 6." },
+  { total: 12, answer: 6, choices: [6, 5, 7], hint: "The 12 apostles stood in 2 equal lines: 6 in each line, because 6 + 6 = 12!", spoken: "Half of 12 is 6." },
   { total: 14, answer: 7, choices: [7, 6, 8], hint: "7 plus 7 is 14, so half of 14 is 7!", spoken: "Half of 14 is 7." },
   { total: 16, answer: 8, choices: [8, 7, 9], hint: "8 plus 8 is 16, so half of 16 is 8!", spoken: "Half of 16 is 8." },
   { total: 18, answer: 9, choices: [9, 8, 10], hint: "9 plus 9 is 18, so half of 18 is 9!", spoken: "Half of 18 is 9." },
@@ -298,7 +298,7 @@ const BANK_BIG_DOUBLES = [
 const BANK_EQUAL_GROUPS = [
   { groups: 2, each: 3, answer: 6, choices: [6, 5, 8], hint: "2 groups of 3 is 3 + 3 = 6!", spoken: "2 times 3 is 6." },
   { groups: 3, each: 2, answer: 6, choices: [6, 5, 8], hint: "3 groups of 2 is 2 + 2 + 2 = 6!", spoken: "3 times 2 is 6." },
-  { groups: 3, each: 4, answer: 12, choices: [12, 7, 15], hint: "3 groups of 4 is 4 + 4 + 4 = 12!", spoken: "3 times 4 is 12." },
+  { groups: 3, each: 4, answer: 12, choices: [12, 7, 15], hint: "Like 3 pews with 4 children in each pew: 4 + 4 + 4 = 12!", spoken: "3 times 4 is 12." },
   { groups: 4, each: 3, answer: 12, choices: [12, 9, 16], hint: "4 groups of 3 is 3 + 3 + 3 + 3 = 12!", spoken: "4 times 3 is 12." },
   { groups: 2, each: 6, answer: 12, choices: [12, 8, 14], hint: "2 groups of 6 is double 6 = 12!", spoken: "2 times 6 is 12." },
   { groups: 3, each: 5, answer: 15, choices: [15, 10, 20], hint: "Count by 5s three times: 5, 10, 15!", spoken: "3 times 5 is 15." },
@@ -356,6 +356,7 @@ const BANK_DOUBLE_DOUBLE = [
 ];
 
 const BANK_TEN_FIVE = [
+  { mult: 10, n: 5, tenVal: 50, answer: 50, choices: [50, 40, 60], hint: "A rosary has 5 decades with 10 beads in each: 5 Golden Ten-Bars make 50!", spoken: "10 times 5 is 50." },
   { mult: 10, n: 3, tenVal: 30, answer: 30, choices: [30, 20, 40], hint: "3 Golden Ten-Bars make 30!", spoken: "10 times 3 is 30." },
   { mult: 5, n: 4, tenVal: 40, answer: 20, choices: [20, 25, 40], hint: "10 × 4 is 40, and half of 40 is 20!", spoken: "5 times 4 is 20." },
   { mult: 10, n: 6, tenVal: 60, answer: 60, choices: [60, 50, 70], hint: "6 Golden Ten-Bars make 60!", spoken: "10 times 6 is 60." },
@@ -387,7 +388,7 @@ const BANK_FAIR_SHARE = [
 
 const BANK_GROUP_DIV = [
   { total: 10, size: 5, answer: 2, choices: [2, 3, 5], hint: "Two groups of 5 make 10!", spoken: "10 divided by 5 is 2." },
-  { total: 12, size: 2, answer: 6, choices: [6, 5, 7], hint: "Six pairs of 2 make 12!", spoken: "12 divided by 2 is 6." },
+  { total: 12, size: 2, answer: 6, choices: [6, 5, 7], hint: "Jesus sent the 12 apostles out two by two: that makes 6 pairs!", spoken: "12 divided by 2 is 6." },
   { total: 15, size: 5, answer: 3, choices: [3, 4, 5], hint: "5, 10, 15 — that is 3 groups of 5!", spoken: "15 divided by 5 is 3." },
   { total: 16, size: 2, answer: 8, choices: [8, 6, 9], hint: "8 pairs of 2 make 16!", spoken: "16 divided by 2 is 8." },
   { total: 18, size: 6, answer: 3, choices: [3, 2, 4], hint: "6, 12, 18 — 3 groups of 6!", spoken: "18 divided by 6 is 3." },

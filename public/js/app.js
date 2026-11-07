@@ -27,197 +27,78 @@ const appEl = document.getElementById("app");
 const dockEl = document.getElementById("dock");
 initDock(dockEl);
 
+/** The level the big Play button starts: first unfinished, then the first without 3 stars. */
+function nextStage() {
+  const stars = S.progress.stars || {};
+  return STAGES.find((s) => !stars[s.id]) ?? STAGES.find((s) => (stars[s.id] || 0) < 3) ?? STAGES[0];
+}
+
 function renderHome() {
   stopSpeak();
+  setDock([]); // no floating bar on the home page
   appEl.innerHTML = "";
+  const stars = S.progress.stars || {};
+  const totalStars = Object.values(stars).reduce((a, b) => a + b, 0);
+  const next = nextStage();
+  const go = (id) => { sfx.go(); location.hash = `#/play/${id}`; };
 
-  // Top Header
-  const totalStars = Object.values(S.progress.stars || {}).reduce(
-    (a, b) => a + b,
-    0
-  );
-  const topbar = el("div", { class: "topbar" }, [
-    el("div", { class: "brand" }, [
-      el("span", { class: "brand-icon", text: "🪞" }),
-      el("div", {}, [
-        el("h1", { class: "brand-title", text: "Doubles!" }),
-        el("div", {
-          class: "brand-sub",
-          text: "Doubles, Halves, Multiplication & Division (Grades 1–3)",
-        }),
-      ]),
-    ]),
-    el("div", { class: "topbar-actions" }, [
-      el("span", {
-        class: "star-pill",
-        html: `⭐ <b>${totalStars}</b>`,
-      }),
-      el("button", {
-        class: "btn small pill",
-        text: "⚙️ Grown-ups",
-        onclick: () => (location.hash = "#/grownups"),
-      }),
-    ]),
+  // Hero: one tap to start playing.
+  const hero = el("section", { class: "home-hero" }, [
+    el("h1", { class: "home-title", html: "Doubles<span>!</span>" }),
+    el("p", { class: "home-lede", text: "Doubles and halves, then groups, arrays, × and ÷, with Montessori bead bars." }),
+    el("button", { class: "btn big primary play-btn pulse", html: `▶ Play`, onclick: () => go(next.id) }),
+    el("p", { class: "home-next", html: `${next.emoji} ${next.title} · ⭐ ${totalStars}` }),
+    el("nav", { class: "grade-jump", "aria-label": "Jump to a grade" },
+      WORLDS.map((w) => el("a", { href: `#grade-${w.n}`, class: "grade-chip", html: `${w.emoji} Grade ${w.n}`,
+        onclick: (e) => { e.preventDefault(); document.getElementById(`grade-${w.n}`)?.scrollIntoView({ behavior: "smooth" }); } }))),
   ]);
+  appEl.append(hero);
 
-  // Interactive Montessori Bead Stair Legend Bar (1 to 10)
-  const beadStairStrip = el("div", { class: "card bead-stair-banner" }, [
-    el("div", {
-      class: "bead-stair-title",
-      html: "📿 <b>Montessori Bead Stair (1–10):</b> Tap any bar to hear its number & color!",
-    }),
-    el(
-      "div",
-      { class: "bead-stair-row" },
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => {
-        const c = BEAD_COLORS[n];
-        return el("button", {
-          class: "bead-stair-chip",
-          title: `${n} (${c.name})`,
-          html: `
-            <span class="stair-num">${n}</span>
-            <span class="stair-svg">${beadBarSvg(n, 6)}</span>
-          `,
-          onclick: () => {
-            sfx.pop();
-            speak(`${n}. Double ${n} is ${n * 2}.`);
-          },
-        });
-      })
-    ),
-  ]);
-
-  // Quick Tools Row: Show & Copy Board, Montessori Array Mat, Number Sense Quiz
-  const toolsGrid = el("div", { class: "tools-grid" }, [
-    el("button", {
-      class: "tool-card copy-tool",
-      onclick: () => {
-        sfx.pop();
-        location.hash = "#/copy";
-      },
-      html: `
-        <span class="tool-icon">✏️</span>
-        <div>
-          <div class="tool-title">Parent Show & Copy Board</div>
-          <div class="tool-desc">Type any number or × / ÷ equation to see its double, half, array & fact family!</div>
-        </div>
-      `,
-    }),
-    el("button", {
-      class: "tool-card mat-tool",
-      onclick: () => {
-        sfx.pop();
-        location.hash = "#/mat";
-      },
-      html: `
-        <span class="tool-icon">🧮</span>
-        <div>
-          <div class="tool-title">Montessori Array & Doubler Mat</div>
-          <div class="tool-desc">Build bead arrays, test mirror doubles, and share into baskets hands-on!</div>
-        </div>
-      `,
-    }),
-    el("button", {
-      class: "tool-card sense-tool",
-      onclick: () => {
-        sfx.pop();
-        location.hash = "#/sense";
-      },
-      html: `
-        <span class="tool-icon">🧠</span>
-        <div>
-          <div class="tool-title">Number Sense Quiz</div>
-          <div class="tool-desc">8-question Grade 1, 2 & 3 conceptual puzzles for doubles, arrays & division!</div>
-        </div>
-      `,
-    }),
-  ]);
-
-  appEl.append(topbar, beadStairStrip, toolsGrid);
-
-  // Worlds (Grades 1, 2, 3)
+  // Grades: tap a level card to play it.
   WORLDS.forEach((w) => {
-    const worldStages = STAGES.filter((s) => s.world === w.id);
-    const sec = el("section", { class: "world-section" }, [
+    const sec = el("section", { class: "world-section", id: `grade-${w.n}` }, [
       el("div", { class: "world-header", style: `--world-hue:${w.hue}` }, [
         el("h2", { class: "world-title", text: w.title }),
         el("p", { class: "world-sub", text: w.subtitle }),
       ]),
-      el(
-        "div",
-        { class: "stage-grid" },
-        worldStages.map((st) => {
-          const earned = S.progress.stars[st.id] || 0;
-          return el("div", { class: "stage-card" }, [
-            el("div", { class: "stage-card-top" }, [
-              el("span", { class: "stage-emoji", text: st.emoji }),
-              starsBar(earned),
-            ]),
-            el("h3", { class: "stage-title", text: st.title }),
-            el("p", { class: "stage-blurb", text: st.blurb }),
-            el("div", { class: "stage-actions" }, [
-              el("button", {
-                class: "btn primary small pill",
-                text: "▶ Play",
-                onclick: () => {
-                  sfx.go();
-                  location.hash = `#/play/${st.id}`;
-                },
-              }),
-              el("button", {
-                class: "btn small pill",
-                text: "🎬 Watch",
-                onclick: () => {
-                  sfx.pop();
-                  location.hash = `#/watch/${st.id}`;
-                },
-              }),
-            ]),
-          ]);
-        })
-      ),
+      el("div", { class: "stage-grid" }, STAGES.filter((st) => st.world === w.id).map((st) =>
+        el("div", { class: `stage-card${st.id === next.id ? " is-next" : ""}` }, [
+          el("button", { class: "stage-main", onclick: () => go(st.id), "aria-label": `Play ${st.title}`, html: `
+            <span class="stage-emoji">${st.emoji}</span>
+            <span class="stage-title">${st.title}</span>
+            <span class="stage-stars">${starsBar(stars[st.id] || 0).outerHTML ?? ""}</span>` }),
+          el("button", { class: "stage-watch", text: "🎬 Watch how", onclick: () => { sfx.pop(); location.hash = `#/watch/${st.id}`; } }),
+        ]))),
     ]);
     appEl.append(sec);
   });
 
-  // Sticker Book
+  // Extras below the levels: bead stair and tools for grown-ups.
+  const beadStairStrip = el("div", { class: "card bead-stair-banner" }, [
+    el("div", { class: "bead-stair-title", html: "📿 <b>Montessori Bead Stair (1–10):</b> tap a bar to hear its number!" }),
+    el("div", { class: "bead-stair-row" }, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => el("button", {
+      class: "bead-stair-chip", title: `${n} (${BEAD_COLORS[n].name})`,
+      html: `<span class="stair-num">${n}</span><span class="stair-svg">${beadBarSvg(n, 6)}</span>`,
+      onclick: () => { sfx.pop(); speak(`${n}. Double ${n} is ${n * 2}.`); },
+    }))),
+  ]);
+  const tool = (icon, title, desc, hash) => el("button", { class: "tool-card", onclick: () => { sfx.pop(); location.hash = hash; },
+    html: `<span class="tool-icon">${icon}</span><div><div class="tool-title">${title}</div><div class="tool-desc">${desc}</div></div>` });
+  const toolsGrid = el("div", { class: "tools-grid" }, [
+    tool("🧠", "Number Sense Quiz", "8 quick questions about doubles, arrays and division.", "#/sense"),
+    tool("🧮", "Array & Doubler Mat", "Build bead arrays and share into baskets.", "#/mat"),
+    tool("✏️", "Show & Copy Board", "For grown-ups: type a number or × / ÷ to show it big.", "#/copy"),
+  ]);
+  appEl.append(el("h2", { class: "extras-title", text: "More to explore" }), toolsGrid, beadStairStrip);
+
   const stickers = Object.entries(S.progress.stickers || {});
   if (stickers.length > 0) {
-    const stickerSec = el("section", { class: "card", style: "margin-top:18px" }, [
+    appEl.append(el("section", { class: "card", style: "margin-top:18px" }, [
       el("h3", { style: "margin:0 0 10px", text: "🏆 Your Sticker Collection" }),
-      el(
-        "div",
-        { style: "display:flex;gap:10px;flex-wrap:wrap;font-size:28px" },
-        stickers.map(([id, emo]) =>
-          el("span", {
-            title: id,
-            style:
-              "background:var(--surface-2);border:2px solid var(--border);border-radius:14px;padding:6px 12px",
-            text: emo,
-          })
-        )
-      ),
-    ]);
-    appEl.append(stickerSec);
+      el("div", { style: "display:flex;gap:10px;flex-wrap:wrap;font-size:28px" }, stickers.map(([id, emo]) =>
+        el("span", { title: id, style: "background:var(--surface-2);border:2px solid var(--border);border-radius:14px;padding:6px 12px", text: emo }))),
+    ]));
   }
-
-  setDock([
-    {
-      icon: "✏️",
-      label: "Show & Copy",
-      onClick: () => (location.hash = "#/copy"),
-    },
-    {
-      icon: "🧮",
-      label: "Array Mat",
-      onClick: () => (location.hash = "#/mat"),
-    },
-    {
-      icon: "🧠",
-      label: "Quiz",
-      onClick: () => (location.hash = "#/sense"),
-    },
-  ]);
 }
 
 route("/", () => renderHome());

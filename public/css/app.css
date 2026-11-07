@@ -1288,3 +1288,39 @@
 
 /* Leave room under the last answer so the bottom bar (Repeat / Hint) never covers it. */
 #app { padding-bottom: 190px; }
+
+/* Back to all Angelio games (angelio.org), at the left of the top bar. */
+.hub-link { display: inline-grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(#5bb4ff, #bfe3ff); box-shadow: 0 2px 0 #3a8fd9; }
+.hub-link img { width: 30px; height: 30px; border-radius: 9px; }
+.hub-link:active { transform: translateY(2px); box-shadow: none; }
+/* Phones: the menu gets its own row and scrolls sideways instead of being cut off. */
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; row-gap: 6px; }
+  .topbar .nav { margin-left: 0; width: 100%; overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .topbar .nav::-webkit-scrollbar { display: none; }
+  .topbar .nav a { white-space: nowrap; }
+}
+
+/* Home: quick start (big Play), grade jump chips, tap-to-play level cards. */
+.home-hero { text-align: center; padding: 18px 0 6px; }
+.home-title { font: 800 clamp(2.8rem, 12vw, 4.2rem)/1 var(--font-display); margin: 0; color: #9333ea; }
+.home-title span { color: #f59e0b; }
+.home-lede { margin: 8px auto 16px; max-width: 30em; color: var(--muted); }
+.play-btn { font-size: 1.7rem; padding: 14px 48px; min-height: 70px; }
+.home-next { margin: 8px 0 12px; color: var(--muted); font-weight: 800; font-size: .95rem; }
+.grade-jump { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.grade-chip { text-decoration: none; font-weight: 800; font-size: .95rem; color: var(--text); background: var(--surface); border: 2px solid var(--border);
+  border-radius: 999px; padding: 6px 11px; box-shadow: var(--shadow); white-space: nowrap; }
+.grade-chip:active { transform: translateY(3px); box-shadow: none; }
+.world-section { scroll-margin-top: 12px; }
+.stage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.stage-card { display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 18px; background: var(--surface-2); border: 2px solid transparent; }
+.stage-card.is-next { border-color: var(--accent); }
+.stage-main { all: unset; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px 8px; text-align: center;
+  font: 800 1.02rem/1.2 var(--font-display); color: var(--text); }
+.stage-main:focus-visible { outline: 3px solid var(--accent); }
+.stage-main .stage-emoji { font-size: 2rem; }
+.stage-watch { all: unset; cursor: pointer; text-align: center; font-size: .82rem; font-weight: 800; padding: 6px; color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 60%, transparent); }
+.extras-title { margin-top: 2em; }
