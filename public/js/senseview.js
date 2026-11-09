@@ -130,7 +130,7 @@ export function renderSense(mount) {
         feedbackBanner.className = "feedback-banner good";
         feedbackBanner.innerHTML = `<span>🌟 Correct! ${q.explain}</span>`;
         speak(`Yes! ${spoken(q.explain)}`);
-        setTimeout(() => advance(false), 1200);
+        setTimeout(() => advance(qMistakes > 0), 1200); // yellow dot if it took a mistake
       } else {
         mistakes++;
         qMistakes++;
@@ -178,7 +178,7 @@ export function renderSense(mount) {
       } else {
         const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1;
         const isPerfect = mistakes === 0;
-        S.recordStage(stageKey, stars, isPerfect ? "🧠" : "⭐");
+        S.recordStage(stageKey, stars, "🧠", isPerfect);
         mount.innerHTML = "";
         mount.append(
           finishCard({

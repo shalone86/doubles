@@ -177,3 +177,11 @@ body.in-game .topbar { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .title span, .mascot, .btn.pulse, .tap-here, .new-sticker span { animation: none !important; }
 }
+
+/* Stickers: one per level, giant with no mistakes, mini otherwise (shared kit). */
+.sticker-book .stickers { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sticker-book .stickers .mini { font-size: 1.3rem; opacity: .85; }
+.sticker-book .stickers .big { font-size: 2.4rem; }
+.world-link { background: linear-gradient(#e9f6ff, #fff); margin-top: 10px; }
+.new-sticker.grew span { animation: grow 1.2s ease-out, bob 2s 1.2s ease-in-out infinite; }
+@keyframes grow { from { transform: scale(.4); } 60% { transform: scale(1.25); } }

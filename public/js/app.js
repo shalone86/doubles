@@ -18,6 +18,8 @@ import {
   beadBarSvg,
 } from "./kit/index.js";
 import { Game } from "./game.js";
+import * as Store from "./kit/store.js";
+import { jingleOnce } from "./kit/jingle.js";
 import { renderWatch } from "./watch.js";
 import { renderCopyBoard } from "./copy.js";
 import { renderMat } from "./mat.js";
@@ -92,15 +94,19 @@ function renderHome() {
   ]);
   appEl.append(el("h2", { class: "extras-title", text: "More to explore" }), toolsGrid, beadStairStrip);
 
-  const stickers = Object.entries(S.progress.stickers || {});
+  const stickers = S.stickers();
   if (stickers.length > 0) {
-    appEl.append(el("section", { class: "card", style: "margin-top:18px" }, [
+    appEl.append(el("section", { class: "card sticker-book", style: "margin-top:18px" }, [
       el("h3", { style: "margin:0 0 10px", text: "🏆 Your Sticker Collection" }),
-      el("div", { style: "display:flex;gap:10px;flex-wrap:wrap;font-size:28px" }, stickers.map(([id, emo]) =>
-        el("span", { title: id, style: "background:var(--surface-2);border:2px solid var(--border);border-radius:14px;padding:6px 12px", text: emo }))),
+      el("div", { class: "stickers" }, stickers.map((s) =>
+        el("span", { class: s.big ? "big" : "mini", title: s.big ? "giant sticker" : "mini sticker: no mistakes makes it giant", text: s.e }))),
+      el("a", { class: "btn world-link", href: "https://angelio.org/stickers/", text: "🌍 Play in Sticker World" }),
     ]));
   }
+
 }
+
+jingleOnce("doubles", () => Store.settings().sounds !== false); // the app's little logo sound, on the first tap
 
 route("/", () => renderHome());
 

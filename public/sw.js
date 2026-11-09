@@ -1,7 +1,7 @@
 // Offline support: network first for the app (updates show right away), cache first for fonts
 // and voice clips. Bump VERSION when you change files, and list new files in ASSETS.
 
-const VERSION = "v4-doubles";
+const VERSION = "v5-doubles";
 // Cache names start with the app id: several apps can share one site (angelio.org/regroup/, /snap/…),
 // and each must only clean up its own caches.
 const APP = "doubles";
@@ -13,7 +13,7 @@ const ASSETS = [
   "css/base.css", "css/app.css",
   "js/app.js", "js/doubles.js", "js/board.js", "js/game.js", "js/watch.js", "js/mat.js", "js/sense.js", "js/senseview.js", "js/copy.js",
   "js/kit/index.js", "js/kit/api.js", "js/kit/dock.js", "js/kit/fx.js", "js/kit/router.js", "js/kit/sound.js", "js/kit/speech.js",
-  "js/kit/store.js", "js/kit/tts.js", "js/kit/ui.js",
+  "js/kit/store.js", "js/kit/tts.js", "js/kit/ui.js", "js/kit/stickers.js", "js/kit/jingle.js",
 ];
 
 self.addEventListener("install", (e) => {

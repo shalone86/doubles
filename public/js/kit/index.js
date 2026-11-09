@@ -47,35 +47,16 @@ export function el(tag, attrs = {}, children = []) {
   return node;
 }
 
-/** Unified store facade (`S`) supporting both function calls and `.progress.stars` / `.progress.stickers`. */
-const stageStickersMap = {};
+/** Store facade used across Doubles views. One sticker per stage: giant with no mistakes, mini otherwise. */
 export const S = {
   seenQuestions: (id) => Store.seenQuestions(id),
   rememberQuestions: (id, keys, maxKeep = 15) => Store.rememberQuestions(id, keys, maxKeep),
-  recordStage: (id, stars, sticker) => {
-    stageStickersMap[id] = sticker;
-    Store.finishLevel(id, stars, sticker);
-  },
+  recordStage: (id, stars, sticker, big) => Store.finishLevel(id, stars, sticker, big),
+  stickers: () => Store.stickers(),
   get progress() {
-    let raw = {};
-    try {
-      raw = JSON.parse(localStorage.getItem("doubles:v1") ?? "null") || {};
-    } catch {
-      raw = {};
-    }
-    const levels = raw.levels || {};
     const stars = {};
-    for (const [k, v] of Object.entries(levels)) {
-      stars[k] = v?.stars || 0;
-    }
-    const stickers = { ...stageStickersMap };
-    if (Array.isArray(raw.stickers)) {
-      raw.stickers.forEach((st, idx) => {
-        const emo = typeof st === "object" ? st.emoji : st;
-        if (emo) stickers[`s_${idx}`] = emo;
-      });
-    }
-    return { stars, stickers };
+    for (const [k, v] of Object.entries(Store.levels?.() ?? {})) stars[k] = v?.stars || 0;
+    return { stars };
   },
 };
 
@@ -96,6 +77,7 @@ export function finishCard({
   perfect = true,
   subtitle = "",
   spokenOverride = null,
+  grew = false,
   onReplay,
   onNext,
 }) {
@@ -104,8 +86,8 @@ export function finishCard({
   const starsEl = el("div", { class: "big-stars", html: starsHtml(stars) });
   const h1 = el("h1", { text: title });
   const stickerEl = el("p", {
-    class: `new-sticker ${perfect ? "big-sticker" : "mini-sticker"}`,
-    html: `<span>${sticker}</span><br>${perfect ? "🌟 Giant Perfect Sticker!" : "⭐ Mini Sticker Earned!"}`,
+    class: `new-sticker ${perfect ? "big-sticker" : "mini-sticker"}${grew ? " grew" : ""}`,
+    html: `<span>${sticker}</span><br>${grew ? "🌟 Your sticker grew into a GIANT sticker!" : perfect ? "🌟 Giant Perfect Sticker!" : "⭐ Mini Sticker Earned!"}`,
   });
   const subEl = el("p", { class: "muted", text: subtitle });
   const actions = el("div", {
@@ -129,9 +111,11 @@ export function finishCard({
       },
     }),
   ]);
-  sec.append(starsEl, h1, stickerEl, subEl, actions);
+  const world = el("p", {}, [el("a", { class: "btn world-link", href: "https://angelio.org/stickers/", text: "🌍 Play in Sticker World" })]);
+  sec.append(starsEl, h1, stickerEl, subEl, actions, world);
 
   const voiceMsg =
+    (grew ? "Wow! Your sticker grew into a giant sticker!" : null) ||
     spokenOverride ||
     (perfect
       ? "Amazing job! You got a perfect score and earned a giant sticker!"

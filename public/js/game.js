@@ -293,7 +293,7 @@ export class Game {
       this.feedbackBanner.innerHTML = `<span>🌟 ${praise} ${q.hint}</span>`;
       speak(`${praise} ${spoken(q.hint)}`);
 
-      setTimeout(() => this.advance(false), 1250);
+      setTimeout(() => this.advance(this.qMistakes > 0), 1250); // yellow dot if it took a mistake
     } else {
       this.mistakes++;
       this.qMistakes++;
@@ -356,8 +356,7 @@ export class Game {
     }
     const stars = this.mistakes === 0 ? 3 : this.mistakes <= 2 ? 2 : 1;
     const isPerfect = this.mistakes === 0;
-    const sticker = isPerfect ? this.stage.emoji : `⭐`;
-    S.recordStage(this.stage.id, stars, sticker);
+    const got = S.recordStage(this.stage.id, stars, this.stage.emoji, isPerfect);
 
     this.mount.innerHTML = "";
     const seconds = (performance.now() - this.startedAt) / 1000;
@@ -372,6 +371,7 @@ export class Game {
       stars,
       sticker: this.stage.emoji,
       perfect: isPerfect,
+      grew: !!got?.grew,
       subtitle: isPerfect
         ? "You solved every problem on your own! Giant sticker unlocked!"
         : "You got a mini sticker! Replay the lesson to get all green dots and unlock the giant sticker!",
