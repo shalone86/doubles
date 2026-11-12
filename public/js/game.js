@@ -241,6 +241,7 @@ export class Game {
     renderExerciseBoard(q, this.stageEl, (picked, btnEl, allBtns) =>
       this.handlePick(picked, btnEl, allBtns)
     );
+    this.stageEl.onBeadHint = (msg) => this.showHint(msg, false); // Double Detective's bead checks
 
     speak(this.getSpokenText(q, false));
 
@@ -255,9 +256,8 @@ export class Game {
         label: "Hint",
         onClick: () => {
           sfx.pop();
-          const gentleClue = q.clue
-            ? `Think about ${q.clue}! Tap the board to count the beads.`
-            : "Tap the board to count the beads!";
+          const tapWhat = q.kind === "missing-double" ? "Tap a twin to add beads to both, and count them!" : "Tap the board to count the beads!";
+          const gentleClue = q.clue ? `Think about ${q.clue}! ${tapWhat}` : tapWhat;
           this.showHint(gentleClue, false);
           speak(spoken(gentleClue));
         },
@@ -322,28 +322,19 @@ export class Game {
           this.stageEl.revealSolution();
         }
 
-        const nextBtn = el("button", {
-          class: "btn primary small pill",
-          style: "margin-left:auto",
-          text: "Next Question ▶",
-          onclick: () => {
+        // The answer, then "Next Question" in the bottom bar: the same place every time.
+        this.showHint(`I'll give you the answer! ${q.hint}`, false);
+        setDock([{
+          icon: "▶",
+          label: "Next Question",
+          primary: true,
+          pulse: true,
+          onClick: () => {
             sfx.pop();
             stopSpeak();
             this.advance(true);
           },
-        });
-        this.showHint(`I'll give you the answer! ${q.hint}`, false, nextBtn);
-        setDock([
-          el("button", {
-            class: "btn big primary pulse",
-            text: "Next Question ▶",
-            onclick: () => {
-              sfx.pop();
-              stopSpeak();
-              this.advance(true);
-            },
-          }),
-        ]);
+        }]);
         speak(`I'll give you the answer! ${spoken(q.hint)}`);
       }
     }

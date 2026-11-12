@@ -744,7 +744,17 @@
 .twin-beads {
   font-weight: 800;
   color: var(--purple-ink);
+  min-height: 40px;
+  display: grid;
+  place-items: center;
 }
+.mystery-twin-card { cursor: pointer; min-width: 140px; }
+.mystery-twin-card:active { transform: translateY(2px); }
+.mystery-twin-card:disabled { cursor: default; opacity: 1; }
+.twin-empty { font-size: 14px; color: var(--muted); }
+.twin-tools { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+.twin-counter { font-size: 18px; font-weight: 700; }
+@media (max-width: 480px) { .mystery-twin-card { min-width: 0; flex: 1; padding: 8px 10px; } .mystery-twin-row { gap: 8px; flex-wrap: nowrap; } }
 
 /* Equal Groups & Boxes */
 .equal-groups-grid,
@@ -1384,4 +1394,23 @@
   .baskets-row { flex-wrap: nowrap !important; gap: 8px !important; }
   .fair-basket { flex: 1 1 0 !important; min-width: 0 !important; padding: 8px 6px !important; }
   .basket-count { width: 44px !important; height: 44px !important; font-size: 1.3rem !important; }
+}
+
+/* Double Detective: twins always side by side, and long bead bars shrink to fit their box */
+.mystery-twin-row { flex-wrap: nowrap; }
+.mystery-twin-card { flex: 1 1 0; min-width: 0; max-width: 260px; }
+.twin-beads { width: 100%; }
+.twin-beads svg { max-width: 100%; height: auto; }
+@media (orientation: landscape) and (max-height: 520px) {
+  .mystery-twin-card { padding: 6px 8px; gap: 4px; }
+  .twin-total-badge { font-size: 15px; margin-bottom: 4px; }
+  .twin-tools { margin-top: 4px; }
+}
+.twin-bars { display: grid; gap: 4px; justify-items: start; }
+
+/* Sideways phones: the bottom-bar buttons sit side by side, and the hint banner stays above them. */
+@media (orientation: landscape) and (max-height: 520px) {
+  #dock { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 6px; }
+  #dock .btn.pill { padding: 6px 12px; font-size: .9rem; }
+  .feedback-banner { bottom: 66px; max-height: calc(100vh - 230px); overflow-y: auto; }
 }

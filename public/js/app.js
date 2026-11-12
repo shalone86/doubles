@@ -108,6 +108,9 @@ function renderHome() {
     ]));
   }
 
+  // Back on Home: open at the grade they were last on (after the router's scroll to the top).
+  const lastW = Number(Store.settings().lastWorld || 0);
+  if (lastW > 1) setTimeout(() => document.getElementById(`grade-${lastW}`)?.scrollIntoView({ behavior: "auto", block: "start" }), 0);
 }
 
 jingleOnce("doubles", () => Store.settings().sounds !== false); // the app's little logo sound, on the first tap
@@ -146,10 +149,6 @@ route("/grownups", () => {
   });
   setDock([]);
 
-  const lastW = Number(Store.settings().lastWorld || 0);
-  if (lastW > 1) {
-    requestAnimationFrame(() => document.getElementById(`grade-${lastW}`)?.scrollIntoView({ behavior: "auto" }));
-  }
 });
 
 startRouter();

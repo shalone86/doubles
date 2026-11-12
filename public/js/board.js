@@ -244,42 +244,80 @@ export function renderExerciseBoard(q, stageEl, onPick) {
     };
   }
 
-  // ── 4. MISSING DOUBLES & HALVES (□ + □ = Total) ──
+  // ── 4. MISSING DOUBLES & HALVES (□ + □ = Total): Double Detective ──
+  // Kids can test their guess: tapping either twin adds a bead to BOTH (twins always match), and
+  // the counter shows what the twins make together. Too many once: a gentle "take some away".
+  // Too many twice: the beads stop and the hint shows the right number in each twin. The beads are
+  // only for checking: a dot turns yellow only if the answer they pick is wrong.
   else if (q.kind === "missing-double") {
     const mdStage = el("div", { class: "missing-double-stage" });
-    const twinClick = (btn) => {
-      sfx.pop();
-      btn.classList.add("pop-in");
-      setTimeout(() => btn.classList.remove("pop-in"), 300);
-      speak(`Two equal twins make ${q.total}! What number plus itself equals ${q.total}?`);
-    };
-    const leftMystery = el("button", {
+    let beads = 0, tooMany = 0, locked = false;
+    const twinCard = (n) => el("button", {
       type: "button",
       class: "mystery-twin-card",
+      "aria-label": `Twin ${n}: tap to add a bead to both twins`,
       html: `
-        <div class="twin-title">Twin #1</div>
-        <div class="twin-beads" data-twin-beads>❓ Equal Share</div>
-        <div class="empty-box twin-box">?</div>
-      `,
-      onclick: () => twinClick(leftMystery),
+        <div class="twin-title">Twin #${n}</div>
+        <div class="twin-beads" data-twin-beads></div>
+        <div class="empty-box twin-box" data-twin-count>?</div>`,
+      onclick: () => addBead(),
     });
-    const rightMystery = el("button", {
-      type: "button",
-      class: "mystery-twin-card",
-      html: `
-        <div class="twin-title">Twin #2</div>
-        <div class="twin-beads" data-twin-beads>❓ Equal Share</div>
-        <div class="empty-box twin-box">?</div>
-      `,
-      onclick: () => twinClick(rightMystery),
-    });
-    const totalBadge = el("div", {
-      class: "twin-total-badge",
-      html: `🔍 Together the two twins make <b>${q.total}</b>!`,
-    });
-    const twinRow = el("div", { class: "mystery-twin-row" }, [leftMystery, rightMystery]);
-    mdStage.append(totalBadge, twinRow);
+    const left = twinCard(1), right = twinCard(2);
+    const totalBadge = el("div", { class: "twin-total-badge", html: `🔍 Together the two twins make <b>${q.total}</b>!` });
+    const counter = el("div", { class: "twin-counter", "aria-live": "polite" });
+    const less = el("button", { type: "button", class: "btn small twin-less", text: "➖ Take one away", onclick: () => removeBead() });
+    const tools = el("div", { class: "twin-tools" }, [counter, less]);
+    const twinRow = el("div", { class: "mystery-twin-row" }, [left, right]);
+    mdStage.append(totalBadge, twinRow, tools);
     visualCard.append(mdStage);
+
+    const paint = () => {
+      mdStage.querySelectorAll("[data-twin-beads]").forEach((b) => {
+        // More than 10: a ten-bar plus the rest, like the Montessori bead bars (one bar holds at most 12).
+        b.innerHTML = !beads ? `<span class="twin-empty">👆 Tap to add beads</span>`
+          : beads <= 10 ? beadBarSvg(beads, 11)
+          : `<span class="twin-bars">${Array.from({ length: Math.floor(beads / 10) }, () => beadBarSvg(10, 11)).join("")}${beads % 10 ? beadBarSvg(beads % 10, 11) : ""}</span>`;
+      });
+      mdStage.querySelectorAll("[data-twin-count]").forEach((b) => { b.textContent = beads ? String(beads) : "?"; });
+      counter.innerHTML = beads ? `<b>${beads}</b> + <b>${beads}</b> = <b>${beads * 2}</b>${beads * 2 === q.total ? " ✅" : ` <span class="muted">(need ${q.total})</span>`}` : "Tap a twin to test a number.";
+      less.disabled = !beads || locked;
+      left.disabled = right.disabled = locked;
+    };
+    const addBead = () => {
+      if (locked) return;
+      beads++;
+      sfx.pop();
+      const sum = beads * 2;
+      if (sum > q.total) {
+        tooMany++;
+        if (tooMany >= 2) {
+          // Second time: stop, and show the right number of beads in each twin.
+          locked = true;
+          beads = q.answer;
+          paint();
+          const msg = `Too many again! Let's check: each twin gets ${q.answer} bead${q.answer === 1 ? "" : "s"}. ${q.answer} plus ${q.answer} makes ${q.total}. Now tap the answer.`;
+          speak(msg);
+          stageEl.onBeadHint?.(msg);
+          return;
+        }
+        beads--;
+        paint();
+        const msg = `Oops, ${beads + 1} and ${beads + 1} make ${sum}. That's more than ${q.total}! Try fewer.`;
+        speak(msg);
+        stageEl.onBeadHint?.(msg);
+        return;
+      }
+      paint();
+      speak(sum === q.total ? `${beads} and ${beads} make ${q.total}! Now tap the answer.` : `${beads} and ${beads} make ${sum}.`);
+    };
+    const removeBead = () => {
+      if (!beads || locked) return;
+      beads--;
+      sfx.pop();
+      paint();
+      speak(beads ? `${beads} and ${beads} make ${beads * 2}.` : "No beads.");
+    };
+    paint();
 
     eqBar.innerHTML = `
       <span class="empty-box">?</span>
@@ -290,13 +328,9 @@ export function renderExerciseBoard(q, stageEl, onPick) {
     `;
 
     stageEl.revealSolution = () => {
-      mdStage.querySelectorAll("[data-twin-beads]").forEach((elBead) => {
-        elBead.innerHTML = beadBarSvg(q.answer, 11);
-      });
-      mdStage.querySelectorAll(".empty-box").forEach((b) => {
-        b.textContent = String(q.answer);
-        b.classList.add("filled", "pop-in");
-      });
+      locked = true;
+      beads = q.answer;
+      paint();
       fillEquationSlots();
     };
   }

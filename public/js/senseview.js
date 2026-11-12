@@ -149,19 +149,10 @@ export function renderSense(mount) {
               b.classList.add("correct");
             }
           });
-          const nextBtn = el("button", {
-            class: "btn primary small pill",
-            style: "margin-left:auto",
-            text: "Next ▶",
-            onclick: () => {
-              sfx.pop();
-              stopSpeak();
-              advance(true);
-            },
-          });
           feedbackBanner.className = "feedback-banner info";
           feedbackBanner.innerHTML = `<span>💡 I'll give you the answer! ${q.explain}</span>`;
-          feedbackBanner.append(nextBtn);
+          // "Next" in the bottom bar: the same place as everywhere else.
+          setDock([{ icon: "▶", label: "Next", primary: true, pulse: true, onClick: () => { sfx.pop(); stopSpeak(); advance(true); } }]);
           speak(`I'll give you the answer! ${spoken(q.explain)}`);
         }
       }
