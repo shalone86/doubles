@@ -226,7 +226,7 @@ export function renderExerciseBoard(q, stageEl, onPick) {
         </div>
       </div>
       <div class="nd-helper-callout">
-        💡 <b>Double ${q.base}</b> is <b>${q.doubleVal}</b>, then add <b>1 more</b>!
+        💡 Start with <b>Double ${q.base}</b>, then add <b>1 more</b>!
       </div>
     `;
     visualCard.append(ndStage);
@@ -247,21 +247,31 @@ export function renderExerciseBoard(q, stageEl, onPick) {
   // ── 4. MISSING DOUBLES & HALVES (□ + □ = Total) ──
   else if (q.kind === "missing-double") {
     const mdStage = el("div", { class: "missing-double-stage" });
-    const leftMystery = el("div", {
+    const twinClick = (btn) => {
+      sfx.pop();
+      btn.classList.add("pop-in");
+      setTimeout(() => btn.classList.remove("pop-in"), 300);
+      speak(`Two equal twins make ${q.total}! What number plus itself equals ${q.total}?`);
+    };
+    const leftMystery = el("button", {
+      type: "button",
       class: "mystery-twin-card",
       html: `
         <div class="twin-title">Twin #1</div>
         <div class="twin-beads" data-twin-beads>❓ Equal Share</div>
         <div class="empty-box twin-box">?</div>
       `,
+      onclick: () => twinClick(leftMystery),
     });
-    const rightMystery = el("div", {
+    const rightMystery = el("button", {
+      type: "button",
       class: "mystery-twin-card",
       html: `
         <div class="twin-title">Twin #2</div>
         <div class="twin-beads" data-twin-beads>❓ Equal Share</div>
         <div class="empty-box twin-box">?</div>
       `,
+      onclick: () => twinClick(rightMystery),
     });
     const totalBadge = el("div", {
       class: "twin-total-badge",
@@ -309,8 +319,8 @@ export function renderExerciseBoard(q, stageEl, onPick) {
         </div>
       </div>
       <div class="nd-helper-callout">
-        💡 Double the Tens (<b>${tens} + ${tens} = ${tens * 2}</b>)${
-      ones ? ` and double the Ones (<b>${ones} + ${ones} = ${ones * 2}</b>)!` : "!"
+        💡 Double the Tens (<b>${tens} + ${tens}</b>)${
+      ones ? ` and double the Ones (<b>${ones} + ${ones}</b>)!` : "!"
     }
       </div>
     `;

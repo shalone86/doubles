@@ -16,6 +16,7 @@ import {
   finishCard,
   makeStage,
   lessonIntroFor,
+  STAGES,
 } from "./kit/index.js";
 import { renderExerciseBoard } from "./board.js";
 
@@ -332,6 +333,17 @@ export class Game {
           },
         });
         this.showHint(`I'll give you the answer! ${q.hint}`, false, nextBtn);
+        setDock([
+          el("button", {
+            class: "btn big primary pulse",
+            text: "Next Question ▶",
+            onclick: () => {
+              sfx.pop();
+              stopSpeak();
+              this.advance(true);
+            },
+          }),
+        ]);
         speak(`I'll give you the answer! ${spoken(q.hint)}`);
       }
     }
@@ -366,6 +378,9 @@ export class Game {
       ? `Amazing job! You got every single question right and earned a giant ${this.stage.title} sticker!`
       : `Good practice! You earned a mini sticker. Try the lesson again to turn every yellow dot green and win the giant sticker!`;
 
+    const curIdx = STAGES.findIndex((s) => s.id === this.stage.id);
+    const nextStage = curIdx >= 0 && curIdx + 1 < STAGES.length ? STAGES[curIdx + 1] : null;
+
     const card = finishCard({
       title: isPerfect ? "Perfect Score!" : `${this.stage.title} Complete!`,
       stars,
@@ -376,6 +391,8 @@ export class Game {
         ? "You solved every problem on your own! Giant sticker unlocked!"
         : "You got a mini sticker! Replay the lesson to get all green dots and unlock the giant sticker!",
       spokenOverride: voiceSummary,
+      nextLabel: nextStage ? `Next: ${nextStage.emoji} ${nextStage.title} ▶` : null,
+      onNextLesson: nextStage ? () => new Game(nextStage, this.mount, this.onExit) : null,
       onReplay: () => new Game(this.stage, this.mount, this.onExit),
       onNext: () => this.onExit(),
     });

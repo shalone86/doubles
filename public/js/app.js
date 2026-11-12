@@ -53,7 +53,11 @@ function renderHome() {
     el("p", { class: "home-next", html: `${next.emoji} ${next.title} · ⭐ ${totalStars}` }),
     el("nav", { class: "grade-jump", "aria-label": "Jump to a grade" },
       WORLDS.map((w) => el("a", { href: `#grade-${w.n}`, class: "grade-chip", html: `${w.emoji} Grade ${w.n}`,
-        onclick: (e) => { e.preventDefault(); document.getElementById(`grade-${w.n}`)?.scrollIntoView({ behavior: "smooth" }); } }))),
+        onclick: (e) => {
+          e.preventDefault();
+          Store.setSetting("lastWorld", w.n);
+          document.getElementById(`grade-${w.n}`)?.scrollIntoView({ behavior: "smooth" });
+        } }))),
   ]);
   appEl.append(hero);
 
@@ -112,6 +116,7 @@ route("/", () => renderHome());
 
 route("/play/:id", ({ id }) => {
   const stage = STAGES.find((s) => s.id === id) || STAGES[0];
+  Store.setSetting("lastWorld", stage.world);
   new Game(stage, appEl, () => {
     location.hash = "#/";
   });
@@ -140,6 +145,11 @@ route("/grownups", () => {
     subtitle: "Montessori Bead Bars, Mirror Doubles, Fair-Share Halves, Arrays & Fact Families (Grades 1–3)",
   });
   setDock([]);
+
+  const lastW = Number(Store.settings().lastWorld || 0);
+  if (lastW > 1) {
+    requestAnimationFrame(() => document.getElementById(`grade-${lastW}`)?.scrollIntoView({ behavior: "auto" }));
+  }
 });
 
 startRouter();

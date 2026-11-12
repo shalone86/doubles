@@ -78,6 +78,8 @@ export function finishCard({
   subtitle = "",
   spokenOverride = null,
   grew = false,
+  nextLabel = null,
+  onNextLesson = null,
   onReplay,
   onNext,
 }) {
@@ -110,6 +112,18 @@ export function finishCard({
         if (onNext) onNext();
       },
     }),
+    ...(nextLabel && onNextLesson
+      ? [
+          el("button", {
+            class: `btn big ${perfect ? "primary pulse" : ""}`,
+            text: nextLabel,
+            onclick: () => {
+              sfx.go();
+              onNextLesson();
+            },
+          }),
+        ]
+      : []),
   ]);
   const world = el("p", {}, [el("a", { class: "btn world-link", href: "https://angelio.org/stickers/", text: "🌍 Play in Sticker World" })]);
   sec.append(starsEl, h1, stickerEl, subEl, actions, world);

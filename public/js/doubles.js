@@ -126,6 +126,14 @@ export const STAGES = [
     mode: "big-double",
     blurb: "Double tens and two-digit numbers using Golden Ten-Bars!",
   },
+  {
+    id: "g1-skip-count",
+    world: 1,
+    title: "Skip Counting (2s, 5s, 10s)",
+    emoji: "🐸",
+    mode: "skip-count-g1",
+    blurb: "Hop along the stepping stones by 2s, 5s, and 10s!",
+  },
 
   // ── WORLD 2 (Grade 2) ──
   {
@@ -310,6 +318,19 @@ const BANK_EQUAL_GROUPS = [
   { groups: 5, each: 4, answer: 20, choices: [20, 16, 24], hint: "5 groups of 4 makes 20!", spoken: "5 times 4 is 20." },
 ];
 
+const BANK_SKIP_COUNT_G1 = [
+  { step: 2, seq: [2, 4, 6, null, 10], blankIdx: 3, answer: 8, choices: [8, 7, 9], hint: "Hop 2 more from 6!", spoken: "2, 4, 6, 8, 10." },
+  { step: 2, seq: [4, 6, null, 10, 12], blankIdx: 2, answer: 8, choices: [8, 7, 9], hint: "Count by 2s: 2 more after 6!", spoken: "4, 6, 8, 10, 12." },
+  { step: 2, seq: [6, 8, 10, null, 14], blankIdx: 3, answer: 12, choices: [12, 11, 13], hint: "Add 2 to 10!", spoken: "6, 8, 10, 12, 14." },
+  { step: 2, seq: [10, 12, null, 16, 18], blankIdx: 2, answer: 14, choices: [14, 13, 15], hint: "Hop 2 more from 12!", spoken: "10, 12, 14, 16, 18." },
+  { step: 5, seq: [5, 10, null, 20, 25], blankIdx: 2, answer: 15, choices: [15, 12, 18], hint: "Count by 5s: 5 more than 10!", spoken: "5, 10, 15, 20, 25." },
+  { step: 5, seq: [10, 15, 20, null, 30], blankIdx: 3, answer: 25, choices: [25, 22, 28], hint: "Add 5 to 20!", spoken: "10, 15, 20, 25, 30." },
+  { step: 5, seq: [15, 20, null, 30, 35], blankIdx: 2, answer: 25, choices: [25, 23, 27], hint: "Hop 5 more after 20!", spoken: "15, 20, 25, 30, 35." },
+  { step: 10, seq: [10, 20, null, 40, 50], blankIdx: 2, answer: 30, choices: [30, 25, 35], hint: "Count by 10s: 10 more than 20!", spoken: "10, 20, 30, 40, 50." },
+  { step: 10, seq: [20, 30, 40, null, 60], blankIdx: 3, answer: 50, choices: [50, 45, 55], hint: "Add 10 more to 40!", spoken: "20, 30, 40, 50, 60." },
+  { step: 10, seq: [40, 50, null, 70, 80], blankIdx: 2, answer: 60, choices: [60, 55, 65], hint: "10 more than 50!", spoken: "40, 50, 60, 70, 80." },
+];
+
 const BANK_SKIP_COUNT = [
   { step: 2, seq: [2, 4, 6, null, 10], blankIdx: 3, answer: 8, choices: [8, 7, 9], hint: "Counting by 2s: 2, 4, 6, 8, 10!", spoken: "2, 4, 6, 8, 10." },
   { step: 2, seq: [10, 12, 14, null, 18], blankIdx: 3, answer: 16, choices: [16, 15, 17], hint: "Add 2 each hop: 14 + 2 = 16!", spoken: "10, 12, 14, 16, 18." },
@@ -472,6 +493,7 @@ function buildQuestionVoice(q) {
       return `What is ${q.n} plus ${q.n}?`;
     case "equal-groups":
       return `${q.groups} equal groups of ${q.each}. What is ${q.groups} times ${q.each}?`;
+    case "skip-count-g1":
     case "skip-count": {
       const seqWords = (q.seq || []).map((v) => (v === null ? "blank" : v)).join(", ");
       return `Skip-count by ${q.step}s: ${seqWords}. Which number goes on the orange stone?`;
@@ -634,8 +656,10 @@ function makeStageRaw(s, seed = 1, avoidKeys = []) {
       }));
     }
 
+    case "skip-count-g1":
     case "skip-count": {
-      const sh = pickRotating(BANK_SKIP_COUNT, seed, avoidKeys);
+      const bank = s.mode === "skip-count-g1" ? BANK_SKIP_COUNT_G1 : BANK_SKIP_COUNT;
+      const sh = pickRotating(bank, seed, avoidKeys);
       return sh.map((q, idx) => ({
         stageId: s.id,
         key: itemKey(q),
@@ -924,6 +948,7 @@ function lessonIntroRaw(s) {
           <div class="onboarding-caption">3 groups of 4 beads = <b>3 × 4 = 12</b>!</div>`,
       };
 
+    case "skip-count-g1":
     case "skip-count":
       return {
         title: s.title,
