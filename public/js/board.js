@@ -888,4 +888,42 @@ export function renderExerciseBoard(q, stageEl, onPick) {
 
   wrap.append(visualCard, eqBar, choicesWrap);
   stageEl.append(wrap);
+  enableBeadCounting(visualCard);
+}
+
+/**
+ * "Tap the beads to count them" works on every board: tapping a ten-bar (or a ones bar) counts on
+ * by its beads ("10… 20… 30…"), and tapping any other bead bar lights its beads one at a time, with
+ * a note for each, then says how many. Buttons on the board keep their own taps.
+ */
+function enableBeadCounting(root) {
+  let running = 0, busy = false;
+  root.addEventListener("click", (e) => {
+    if (e.target.closest("button, .choice-tile-btn")) return;
+    const group = e.target.closest(".gold-ten-col, .ten-bar-wrap, .unit-bar-wrap");
+    if (group) {
+      const n = group.querySelectorAll("circle[stroke]").length;
+      if (!group.classList.contains("counted")) {
+        running += n;
+        group.classList.add("counted");
+        let badge = group.querySelector(".count-badge");
+        if (!badge) { badge = document.createElement("span"); badge.className = "count-badge"; group.append(badge); }
+        badge.textContent = String(running);
+        sfx.pop();
+      }
+      speak(String(running));
+      return;
+    }
+    const bar = e.target.closest(".bead-bar-svg");
+    if (!bar || busy) return;
+    const beads = [...bar.querySelectorAll("circle[stroke]")];
+    if (!beads.length) return;
+    busy = true;
+    beads.forEach((b) => b.classList.remove("lit"));
+    beads.forEach((b, i) => setTimeout(() => {
+      b.classList.add("lit");
+      sfx.key ? sfx.key(i + 1) : sfx.pop();
+      if (i === beads.length - 1) { speak(String(beads.length)); busy = false; }
+    }, i * 260));
+  });
 }

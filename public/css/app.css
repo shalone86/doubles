@@ -1418,3 +1418,12 @@
 .twin-less.wiggle { animation: twin-wiggle .5s ease-in-out 2; box-shadow: 0 0 0 3px var(--yellow, #ffc93c); }
 @keyframes twin-wiggle { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
 @media (prefers-reduced-motion: reduce) { .twin-less.wiggle { animation: none; } }
+
+/* Tap the beads to count them */
+.visual-stage-card .bead-bar-svg, .gold-ten-col, .ten-bar-wrap, .unit-bar-wrap { cursor: pointer; }
+.bead-bar-svg circle[stroke] { transition: transform .2s, filter .2s; transform-box: fill-box; transform-origin: center; }
+.bead-bar-svg circle.lit { filter: brightness(1.35) drop-shadow(0 0 2px #ffd54a); transform: scale(1.18); }
+.gold-ten-col, .ten-bar-wrap, .unit-bar-wrap { position: relative; }
+.gold-ten-col.counted, .ten-bar-wrap.counted, .unit-bar-wrap.counted { outline: 3px solid var(--yellow, #ffc93c); outline-offset: 2px; border-radius: 8px; }
+.count-badge { position: absolute; top: -10px; right: -8px; background: var(--accent, #ff8a00); color: #fff; font: 800 13px var(--font-body);
+  border-radius: 999px; padding: 1px 7px; box-shadow: 0 2px 0 rgb(0 0 0 / .15); }

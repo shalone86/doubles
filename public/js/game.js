@@ -256,7 +256,9 @@ export class Game {
         label: "Hint",
         onClick: () => {
           sfx.pop();
-          const tapWhat = q.kind === "missing-double" ? "Tap a twin to add beads to both, and count them!" : "Tap the board to count the beads!";
+          const tapWhat = q.kind === "missing-double" ? "Tap a twin to add beads to both, and count them!"
+            : q.kind === "ten-five" || q.kind === "big-double" ? "Tap each ten-bar to count by tens!"
+            : "Tap the beads to count them!";
           const gentleClue = q.clue ? `Think about ${q.clue}! ${tapWhat}` : tapWhat;
           this.showHint(gentleClue, false);
           speak(spoken(gentleClue));
