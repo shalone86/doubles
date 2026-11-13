@@ -1414,3 +1414,7 @@
   #dock .btn.pill { padding: 6px 12px; font-size: .9rem; }
   .feedback-banner { bottom: 66px; max-height: calc(100vh - 230px); overflow-y: auto; }
 }
+
+.twin-less.wiggle { animation: twin-wiggle .5s ease-in-out 2; box-shadow: 0 0 0 3px var(--yellow, #ffc93c); }
+@keyframes twin-wiggle { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+@media (prefers-reduced-motion: reduce) { .twin-less.wiggle { animation: none; } }
